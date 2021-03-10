@@ -1,53 +1,45 @@
 import React from 'react';
-// import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-// import ListItem from '@material-ui/core/ListItem';
-// import ListItemText from '@material-ui/core/ListItemText';
-import BasePage from './BasePage'
-// const useStyles = makeStyles({
-//   list: {
-//     width: 250,
-//   },
-//   fullList: {
-//     width: 'auto',
-//   },
-// });
-export default function TemporaryDrawer() {
-//   const classes = useStyles();
-  const [state, setState] = React.useState({
-    left: false,
-  });
+// import Button from '@material-ui/core/Button';
+// import { TextField } from '@material-ui/core';
 
-  const toggleDrawer = (anchor, open) => (event) => {
+const SideDrawer = props => {
+ 
+
+// let show;
+// if(props.open){
+//     show= (
+//         <div style={{marginTop:'10px'}}> 
+      
+//     <form onSubmit={props.submitted}>
+//     <TextField name="firstName" variant="outlined" label="First name" 
+//     placeholder='Write Your First name' value={props.details.firstName} 
+//      onChange={(e) => props.handleChange(e)} error={props.error.firstnameerror}  helperText={props.error.firstnameerror} />
+     
+//      <br/>
+//     <TextField  variant="outlined"  label="Last name" 
+//     onChange={(e) => props.handleChange(e)} name="lastName"
+//      placeholder='Write Your Last name' value={props.details.lastName} 
+//     error={props.error.lastnameerror}   helperText={props.error.lastnameerror}/><br/>
+//     <TextField   variant="outlined"  label="Age" name="age"
+//      placeholder='Write Your Age' value={props.details.age}
+//     onChange={(e) => props.handleChange(e)}  error={props.error.ageerror} 
+//      helperText={props.error.ageerror}/><br/>
+//     <Button  variant="contained" color="primary" type="submit"  >Submit</Button>
+//     </form>
    
-    setState({ ...state, [anchor]: open });
-  };
-  const list = (anchor) => (
-    <div   
-      role="presentation"
-
-    >
-      <List>
-      <BasePage/>
-      </List>
-      <Divider />
-      <List>
-      </List>
-    </div>
-  );
+// </div> 
+// )
+    
+// }
+// else{
+//     show= null;
+// }
   return (
-    <div>
-      {['left'].map((anchor) => (
-        <React.Fragment key={anchor}>
-          <Button onClick={toggleDrawer(anchor, true)}>{anchor}</Button>
-          <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)}>
-            {list(anchor)}
-          </Drawer>
-        </React.Fragment>
-      ))}
+      <div>
+        {props.children}
+        {/* {show} */}
     </div>
   );
 }
+
+export default SideDrawer;

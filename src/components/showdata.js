@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -15,11 +15,9 @@ const useStyles = makeStyles({
   },
 });
 
-export default function BasicTable(props) {
+ function BasicTable(props) {
   const classes = useStyles();
-  useEffect(()=>{
-
-  },[])
+  
 
 // console.log(props.showAllData)
   return (
@@ -31,6 +29,7 @@ export default function BasicTable(props) {
             <TableCell>First Name</TableCell>
             <TableCell>Last Name</TableCell>
             <TableCell>Age</TableCell>
+            <TableCell >EDIT/DELETE</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -42,7 +41,7 @@ export default function BasicTable(props) {
               <TableCell >{i.lastName}</TableCell>
               <TableCell >{i.age}</TableCell>
               <TableCell>
-                <ButtonGroup varient='contained' color='primary'>
+                <ButtonGroup varient='contained' color='secondary'>
                <Button onClick={props.editData.bind(this,i.id)} >Edit</Button>
               <Button onClick={props.deleteData.bind(this,i.id)} >Delete</Button>
               </ButtonGroup>
@@ -54,3 +53,4 @@ export default function BasicTable(props) {
     </TableContainer>
   );
 }
+export default BasicTable
