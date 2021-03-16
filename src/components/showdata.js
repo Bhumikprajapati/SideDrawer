@@ -15,28 +15,29 @@ const useStyles = makeStyles({
   },
 });
 
-function BasicTable(props) {
+const BasicTable=(props)=> {
   const classes = useStyles();
-
   return (
-
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>First Name</TableCell>
-            <TableCell>Last Name</TableCell>
-            <TableCell>Age</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Address</TableCell>
+            <TableCell>Phone</TableCell>
+            <TableCell>Website</TableCell>
             <TableCell >EDIT/DELETE</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {props.showAllData.map((i, index) => (
-            <TableRow key={i.firstName}>
-
+            <TableRow key={i.id}>
               <TableCell >{i.firstName}</TableCell>
-              <TableCell >{i.lastName}</TableCell>
-              <TableCell >{i.age}</TableCell>
+              <TableCell >{i.email}</TableCell>
+              <TableCell >{i.address}</TableCell>
+              <TableCell >{i.phone}</TableCell>
+              <TableCell >{i.website}</TableCell>
               <TableCell>
                 <ButtonGroup varient='contained' color='secondary'>
                   <Button onClick={props.editData.bind(this, i.id)} >Edit</Button>

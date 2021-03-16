@@ -1,117 +1,157 @@
 import React from 'react';
 import './App.css';
-import SideDrawer from './components/sideDrawer'
-import ShowData from './components/showdata'
+import SideDrawer from './components/sideDrawer';
+import ShowData from './components/showdata';
 import { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import { TextField } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
-
-const App = () => {
-
-  const [details, setDetails] = useState({ firstName: '', lastName: '', age: '', id: '' });
-  const [error, setError] = useState({ firstnameerror: '', lastnameerror: '', ageerror: '' })
-  const [data, setData] = useState([]);
+import * as actions from './store/actions';
+import { connect } from 'react-redux';
+const App = (props) => {
+  const [details, setDetails] = useState({ firstName: '', email: '', address: '',phone:'',website:'',id:''});
+  const [error, setError] = useState({ firstnameError: '', emailError: '',addressError:'', phoneError: '' })
   const [editflag, setEditFlag] = useState(false);
   const [state, setState] = useState(false);
   const toggleDrawer = (open) => (event) => {
     setState(open);
   };
   const handleChange = (e) => {
+    
     if (e.target.name === "firstName")
      {
       if (e.target.value === '') {
-        setError({ ...error, firstnameerror: ' Please Write First name' })
+        setError({ ...error, firstnameError: ' Please Write First name' })
       }
       else {
-        setError({ ...error, firstnameerror: '' })
+        setError({ ...error, firstnameError: '' })
       }
       setDetails({ ...details, firstName: e.target.value })
     }
-    else if (e.target.name === "lastName") 
+    else if (e.target.name === "email") 
     {
+      const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
         if (e.target.value === '')
          {
-          setError({ ...error, lastnameerror: ' Please Write Last name' })
+          setError({ ...error, emailError: ' Please Write Your email ' })
+        }
+        else if(!pattern.test(e.target.value)){
+          setError({ ...error, emailError: ' Please Write Your email correctly' })
+
         }
         else {
-          setError({ ...error, lastnameerror: '' })
+          setError({ ...error, emailError: '' })
         }
-        setDetails({ ...details, lastName: e.target.value })
+        setDetails({ ...details, email: e.target.value })
+
       }
-      else if (e.target.name === "age") 
+      else if (e.target.name === "address") 
       {
-          if (isNaN(e.target.value) || Number(e.target.value) > 100)
+          if (e.target.value === '')
            {
-            setError({ ...error, ageerror: 'not valid' })
+            setError({ ...error, addressError: ' Please Write Your Address' })
           }
           else {
-            setError({ ...error, ageerror: '' })
+            setError({ ...error, addressError: '' })
           }
-          setDetails({ ...details, age: e.target.value })
+          setDetails({ ...details, address: e.target.value })
         }
+        else if (e.target.name === "phone") 
+        {
+          const pattern = /^\d+$/;
+            if (e.target.value === '')
+             {
+              setError({ ...error, phoneError: ' Please Write Phone no.' })
+            }
+            else if(!pattern.test(e.target.value))
+            {
+              setError({ ...error, phoneError: ' Please Write Phone no correctly' })
 
+            }
+            else {
+              setError({ ...error, phoneError: '' })
+            }
+            setDetails({ ...details, phone: e.target.value })
+          }
+          else if(e.target.name==='website')
+          {
+            setDetails({ ...details, website: e.target.value })
+          }
   }
 
 
   const editHandler = (id) => {
     setEditFlag(true);
     setState(true)
-    let index = data.findIndex((i) => i.id === id)
+    let index = props.data.findIndex((i) => i.id === id)
     setDetails({
-      firstName: data[index].firstName,
-      lastName: data[index].lastName,
-      age: data[index].age,
-      id: data[index].id
+      firstName: props.data[index].firstName,
+      email: props.data[index].email,
+      address: props.data[index].address,
+      phone: props.data[index].phone,
+      website: props.data[index].website,
+      id: props.data[index].id
     })
+  
 
   }
   const deleteHandler = (id) => {
-    let d = data.filter((inid) => inid.id !== id)
-    setData(d)
-
+    let ask=window.confirm('Sure to delete?')
+    if(ask){
+      props.onDelete(id);
+    }
   }
   const submitted = (e) => {
     e.preventDefault();
     if (editflag) {
+      let users=[...props.data]
       let id = details.id;
-      let index = data.findIndex((i) => i.id === id)
-      data[index] = details;
-      setData([...data])
+      let index = users.findIndex((i) => i.id === id)
+      users[index] = details;
       setState(false);
+      props.onEdit(users);
       setEditFlag(false)
     }
     else {
-      console.log("edit falg in submitted", editflag)
-      console.log("else here")
-      setDetails({ firstName: '', lastName: '', age: '', id: '' });
-      setState(false); //drawer open close
       setEditFlag(false)
       let id = Math.random(100)
-      setData([...data, details.id = id])
-      setData([...data, details]);
+      details.id=id
+      props.onAdd(details);
+      setDetails({ firstName: '', email: '', address: '',phone:'',website:'',id:''});
+      setState(false); //drawer open close    
+   
     }
-    setDetails({ firstName: '', lastName: '', age: '', id: '' });
+    setDetails({ firstName: '', email: '', address: '',phone:'',website:'',id:''});
   }
 
   const list = () => (
     <div>
       <SideDrawer>
-        <div style={{ margin: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-
+        <div style={{ margin: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',marginRight:'40px' }}>
           <form onSubmit={submitted}>
-            <TextField style={{ marginBottom: '15px' }} name="firstName" variant="outlined" label="First name"
+            <TextField style={{ marginBottom: '15px' }} name="firstName" variant="outlined" label="First name*"
               placeholder='Write Your First name' value={details.firstName}
-              onChange={(e) => handleChange(e)} error={error.firstnameerror.length > 1} helperText={error.firstnameerror} />
+              onChange={(e) => handleChange(e)} error={error.firstnameError.length > 1} helperText={error.firstnameerror} />
             <br />
-            <TextField style={{ marginBottom: '15px' }} variant="outlined" label="Last name"
-              onChange={(e) => handleChange(e)} name="lastName"
-              placeholder='Write Your Last name' value={details.lastName}
-              error={error.lastnameerror.length > 1} helperText={error.lastnameerror} /><br />
-            <TextField style={{ marginBottom: '15px' }} variant="outlined" label="Age" name="age"
-              placeholder='Write Your Age' value={details.age}
-              onChange={(e) => handleChange(e)} error={error.ageerror.length > 1}
-              helperText={error.ageerror} /><br />
+            <TextField style={{ marginBottom: '15px' }} variant="outlined" label="Email*"
+              onChange={(e) => handleChange(e)} name="email"
+              placeholder='Write Your Email' value={details.email}
+              error={error.emailError.length > 1} helperText={error.emailError} />
+              <br />
+            <TextField style={{ marginBottom: '15px' }} variant="outlined" label="Address*" name="address"
+              placeholder='Write Your Address' value={details.address}
+              onChange={(e) => handleChange(e)} error={error.addressError.length > 1}
+              helperText={error.addressError} />
+              <br />
+              <TextField style={{ marginBottom: '15px' }} variant="outlined" label="Phone*" name="phone"
+              placeholder='Write Your Phone No.' value={details.phone}
+              onChange={(e) => handleChange(e)} error={error.phoneError.length > 1}
+              helperText={error.phoneError} />
+              <br/>
+              <TextField style={{ marginBottom: '15px' }} variant="outlined" label="Website" name="website"
+              placeholder='Write Your Website name(if any).' value={details.website}
+              onChange={(e) => handleChange(e)}  />
+              <br/>
             <Button style={{ left: '25%' }} variant="contained" color="primary" type="submit">Submit</Button>
           </form>
 
@@ -119,7 +159,6 @@ const App = () => {
       </SideDrawer>
     </div>
   );
-
   return (
     <div className="App">
       {
@@ -131,12 +170,24 @@ const App = () => {
             {list()}
           </Drawer>}
         </>
+        
       }
-      <ShowData showAllData={data} deleteData={deleteHandler} editData={editHandler} />
-
-
+      
+      <ShowData showAllData={props.data} deleteData={deleteHandler} editData={editHandler} />
     </div>
   );
 }
+const mapStateToProps=state=>{  
+  return{
+data:state.alldata
+  }
+}
+const mapDispatchToProps=dispatch=>{
+  return{
+onAdd:(details)=>dispatch(actions.addData(details)),
+onDelete:(id)=>dispatch(actions.deleteData(id)),
+onEdit:(users)=>dispatch(actions.editData(users))
+  }
+}
 
-export default App;
+export default connect(mapStateToProps,mapDispatchToProps)(App);
