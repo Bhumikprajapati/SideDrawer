@@ -3,9 +3,7 @@ import './App.css';
 import SideDrawer from './components/sideDrawer';
 import ShowData from './components/showdata';
 import { useState } from 'react';
-import Button from '@material-ui/core/Button';
-import { TextField } from '@material-ui/core';
-import Drawer from '@material-ui/core/Drawer';
+import { Button,Drawer, TextField } from '@material-ui/core';
 import * as actions from './store/actions';
 import { connect } from 'react-redux';
 const App = (props) => {
@@ -13,7 +11,7 @@ const App = (props) => {
   const [error, setError] = useState({ firstnameError: '', emailError: '',addressError:'', phoneError: '' })
   const [editflag, setEditFlag] = useState(false);
   const [state, setState] = useState(false);
-  const toggleDrawer = (open) => (event) => {
+  const toggleDrawer = (open) =>() => {
     setState(open);
   };
   const handleChange = (e) => {
@@ -58,7 +56,7 @@ const App = (props) => {
         }
         else if (e.target.name === "phone") 
         {
-          const pattern = /^\d+$/;
+          const pattern = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;          ;
             if (e.target.value === '')
              {
               setError({ ...error, phoneError: ' Please Write Phone no.' })
@@ -78,8 +76,6 @@ const App = (props) => {
             setDetails({ ...details, website: e.target.value })
           }
   }
-
-
   const editHandler = (id) => {
     setEditFlag(true);
     setState(true)
@@ -92,8 +88,6 @@ const App = (props) => {
       website: props.data[index].website,
       id: props.data[index].id
     })
-  
-
   }
   const deleteHandler = (id) => {
     let ask=window.confirm('Sure to delete?')
@@ -152,9 +146,8 @@ const App = (props) => {
               placeholder='Write Your Website name(if any).' value={details.website}
               onChange={(e) => handleChange(e)}  />
               <br/>
-            <Button style={{ left: '25%' }} variant="contained" color="primary" type="submit">Submit</Button>
+            <Button style={{ left: '25%' }} variant="contained" color="primary" type="submit">{!editflag?'Add User':'Update User'}</Button>
           </form>
-
         </div>
       </SideDrawer>
     </div>
@@ -171,8 +164,7 @@ const App = (props) => {
           </Drawer>}
         </>
         
-      }
-      
+      }   
       <ShowData showAllData={props.data} deleteData={deleteHandler} editData={editHandler} />
     </div>
   );
