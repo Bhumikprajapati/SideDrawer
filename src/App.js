@@ -3,10 +3,11 @@ import './App.css';
 import SideDrawer from './components/sideDrawer';
 import ShowData from './components/showdata';
 import { useState } from 'react';
-import { Button,Drawer, TextField } from '@material-ui/core';
+import { Button,Drawer } from '@material-ui/core';
 import * as actions from './store/actions';
 import { connect } from 'react-redux';
 const App = (props) => {
+  const {data,onAdd,onDelete,onEdit} =props
   const [details, setDetails] = useState({ firstName: '', email: '', address: '',phone:'',website:'',id:''});
   const [error, setError] = useState({ firstnameError: '', emailError: '',addressError:'', phoneError: '' })
   const [editflag, setEditFlag] = useState(false);
@@ -15,7 +16,7 @@ const App = (props) => {
     setState(open);
   };
   const handleChange = (e) => {
-    
+ 
     if (e.target.name === "firstName")
      {
       if (e.target.value === '') {
@@ -79,79 +80,42 @@ const App = (props) => {
   const editHandler = (id) => {
     setEditFlag(true);
     setState(true)
-    let index = props.data.findIndex((i) => i.id === id)
+    let index = data.findIndex((i) => i.id === id)
     setDetails({
-      firstName: props.data[index].firstName,
-      email: props.data[index].email,
-      address: props.data[index].address,
-      phone: props.data[index].phone,
-      website: props.data[index].website,
-      id: props.data[index].id
+      firstName: data[index].firstName,
+      email: data[index].email,
+      address: data[index].address,
+      phone: data[index].phone,
+      website: data[index].website,
+      id: data[index].id
     })
   }
   const deleteHandler = (id) => {
     let ask=window.confirm('Sure to delete?')
     if(ask){
-      props.onDelete(id);
+      onDelete(id);
     }
   }
   const submitted = (e) => {
     e.preventDefault();
     if (editflag) {
-      let users=[...props.data]
+      let users=[...data]
       let id = details.id;
       let index = users.findIndex((i) => i.id === id)
       users[index] = details;
       setState(false);
-      props.onEdit(users);
+      onEdit(users);
       setEditFlag(false)
     }
     else {
-      setEditFlag(false)
       let id = Math.random(100)
       details.id=id
-      props.onAdd(details);
+      onAdd(details);
       setDetails({ firstName: '', email: '', address: '',phone:'',website:'',id:''});
-      setState(false); //drawer open close    
-   
+      setState(false); //drawer open close     
     }
     setDetails({ firstName: '', email: '', address: '',phone:'',website:'',id:''});
   }
-
-  const list = () => (
-    <div>
-      <SideDrawer>
-        <div style={{ margin: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',marginRight:'40px' }}>
-          <form onSubmit={submitted}>
-            <TextField style={{ marginBottom: '15px' }} name="firstName" variant="outlined" label="First name*"
-              placeholder='Write Your First name' value={details.firstName}
-              onChange={(e) => handleChange(e)} error={error.firstnameError.length > 1} helperText={error.firstnameerror} />
-            <br />
-            <TextField style={{ marginBottom: '15px' }} variant="outlined" label="Email*"
-              onChange={(e) => handleChange(e)} name="email"
-              placeholder='Write Your Email' value={details.email}
-              error={error.emailError.length > 1} helperText={error.emailError} />
-              <br />
-            <TextField style={{ marginBottom: '15px' }} variant="outlined" label="Address*" name="address"
-              placeholder='Write Your Address' value={details.address}
-              onChange={(e) => handleChange(e)} error={error.addressError.length > 1}
-              helperText={error.addressError} />
-              <br />
-              <TextField style={{ marginBottom: '15px' }} variant="outlined" label="Phone*" name="phone"
-              placeholder='Write Your Phone No.' value={details.phone}
-              onChange={(e) => handleChange(e)} error={error.phoneError.length > 1}
-              helperText={error.phoneError} />
-              <br/>
-              <TextField style={{ marginBottom: '15px' }} variant="outlined" label="Website" name="website"
-              placeholder='Write Your Website name(if any).' value={details.website}
-              onChange={(e) => handleChange(e)}  />
-              <br/>
-            <Button style={{ left: '25%' }} variant="contained" color="primary" type="submit">{!editflag?'Add User':'Update User'}</Button>
-          </form>
-        </div>
-      </SideDrawer>
-    </div>
-  );
   return (
     <div className="App">
       {
@@ -160,12 +124,14 @@ const App = (props) => {
             variant="contained" color="primary"
             onClick={toggleDrawer(true)} >ADD DATA</Button>
           {<Drawer anchor={'top'} open={state} onClose={toggleDrawer(false)}>
-            {list()}
+          <SideDrawer 
+           handleChange={handleChange} error={error} 
+          submitted={submitted} details={details} 
+           editflag={editflag} />
           </Drawer>}
-        </>
-        
+        </>    
       }   
-      <ShowData showAllData={props.data} deleteData={deleteHandler} editData={editHandler} />
+      <ShowData showAllData={data} deleteData={deleteHandler} editData={editHandler} />
     </div>
   );
 }

@@ -32,7 +32,7 @@ const BasicTable=(props)=> {
               <TableCell >{i.phone}</TableCell>
               <TableCell >{i.website}</TableCell>
               <TableCell>
-                <ButtonGroup varient='contained' color='secondary'>
+                <ButtonGroup varient='contained' color='secondary'  >
                   <Button onClick={props.editData.bind(this, i.id)} >Edit</Button>
                   <Button onClick={props.deleteData.bind(this, i.id)} >Delete</Button>
                 </ButtonGroup>
